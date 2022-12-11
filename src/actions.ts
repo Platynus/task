@@ -1,10 +1,17 @@
 import { useState, useEffect } from "react";
-import type { Movie, Character } from "./types";
+import type {
+  Movie,
+  Character,
+  Film,
+  Planet,
+  Species,
+  Starship,
+} from "./types";
 
 /**
  * TODO: dodaj typy
  */
-async function fetchMethod(...args) {
+async function fetchMethod(...args: string[]) {
   const res = await fetch(...args);
   return await res.json();
 }
