@@ -1,39 +1,74 @@
 import type { NextPage } from "next";
+import Link from "next/link";
 import { useRouter } from "next/router";
-import { useMovie } from "../../actions";
+import { getUrlID, useCharacter, useMovies } from "../../actions";
+import { MovieComponent } from "../../components/Movie";
 import styles from "../../styles/Layout.module.css";
 
 const Character: NextPage = () => {
   const router = useRouter();
-
-  /**
-   * TODO: zaimplementuj hook do pobierania filmu
-   */
-  const movie = useMovie(router.query.id);
+  const id = router.query.id as string;
+  const { data: characters, isError, isLoading, isSuccess } = useCharacter(id);
+  const { data: movie } = useMovies();
 
   return (
-    <div className={styles.container}>
-      <h3>Film: {movie.title}</h3>
-      <p>{movie.opening_crawl}</p>
-      <ul>
-        {movie.characters.map(() => {
-          /**
-           * TODO: dodaj listę postaci z linkami do strony o niej
-           */
-        })}
-      </ul>
+    <div>
+      <div className={styles.container}>
+        <h3>Characters</h3>
+        <div>{isLoading && <p>Loading...</p>}</div>
+        <div>{isError && <p>Error</p>}</div>
+        <div>
+          {isSuccess && (
+            <ul>
+              <div>
+                <h4>Name:</h4>
+                <h5>{characters.name}</h5>
+              </div>
+              <div>
+                <h4>Birth Year:</h4>
+                <div>{characters.birth_year}</div>
+              </div>
+              <div>
+                <h4>Height:</h4>
+                <div>{characters.height} cm</div>
+              </div>
+              <div>
+                <h4>Mass:</h4>
+                <div>{characters.mass} kg</div>
+              </div>
+              <div>
+                <h4>Films:</h4>
 
-      <h3>Recenzje</h3>
-      <ul>
-        {/**
-         * TODO: dodaj listę recenzji dla zasobu, recenzje powinny być zapisane w stanie aplikacji
-         */}
-      </ul>
-      <form>
-        {/**
-         * TODO: zaimplementuj formularz dodawania recenzji
-         */}
-      </form>
+                <ul>
+                  {movie?.results.map((movie, i) => (
+                    <div>
+                      <Link href={`/movies/${getUrlID(movie.url)}`} key={i}>
+                        <a>
+                          <MovieComponent
+                            id={getUrlID(movie.url)}
+                          ></MovieComponent>
+                        </a>
+                      </Link>
+                    </div>
+                  ))}
+                </ul>
+              </div>
+            </ul>
+          )}
+        </div>
+
+        <h3>Recenzje</h3>
+        <ul>
+          {/**
+           * TODO: dodaj listę recenzji dla zasobu, recenzje powinny być zapisane w stanie aplikacji
+           */}
+        </ul>
+        <form>
+          {/**
+           * TODO: zaimplementuj formularz dodawania recenzji
+           */}
+        </form>
+      </div>
     </div>
   );
 

@@ -1,28 +1,30 @@
 import "../styles/globals.css";
 import type { AppProps } from "next/app";
-import Breadcrumbs from "../components/Breadcrumbs";
 import Head from "next/head";
 import Link from "next/link";
+import {
+  QueryClient,
+  QueryClientProvider,
+  Hydrate,
+  DehydratedState,
+} from "@tanstack/react-query";
+import React from "react";
 
-function MyApp({ Component, pageProps }: AppProps) {
+function MyApp({
+  Component,
+  pageProps,
+}: AppProps<{ dehydratedState: DehydratedState }>) {
+  const [queryClient] = React.useState(() => new QueryClient());
   return (
-    <>
-      <Head>
-        <title>
-          Zadanie testowe -
-          {/**
-           * TODO: Dodaj tytuł aktualnej strony
-           */}
-        </title>
-      </Head>
-      <Breadcrumbs />
-      <Component {...pageProps} />
-
-      {/**
-       * TODO: powrót do poprzedniej strony jeśli nie jesteśmy aktualnie na stronie głównej
-       */}
-      <Link href="/">Powrót</Link>
-    </>
+    <QueryClientProvider client={queryClient}>
+      <Hydrate state={pageProps.dehydratedState}>
+        <Head>
+          <title>{Component.name}</title>
+        </Head>
+        <Component {...pageProps} />
+        {Component.name !== "Home" && <Link href="/">Powrót</Link>}
+      </Hydrate>
+    </QueryClientProvider>
   );
 }
 
